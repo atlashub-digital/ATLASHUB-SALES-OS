@@ -1,5 +1,5 @@
 # AtlasHub Sales OS — FOUNDATION 01
-**Estado:** diretiva aprovada para descoberta e piloto técnico; **deploy não autorizado nesta etapa**  
+**Estado:** GO EXECUTIVO — instalação end-to-end na VPS AtlasHub, com isolamento e rollback  
 **Base:** [melgarafael/DeskcommCRM](https://github.com/melgarafael/DeskcommCRM) · licença MIT  
 **Fork:** [atlashub-digital/ATLASHUB-SALES-OS](https://github.com/atlashub-digital/ATLASHUB-SALES-OS)  
 **Data da diretiva:** 2026-10-28
@@ -14,12 +14,30 @@ A prioridade é colocar um **piloto interno real, controlado e reversível** em 
 
 ## 2. Limites de autorização
 
-Nesta fase, é autorizado **investigar, documentar, testar sem dados reais e preparar PRs revisáveis**. **Não** é autorizado, sem decisão posterior:
-- Alterar/deixar offline sistemas atuais, mudar DNS, ligar números WhatsApp reais, ativar IA em conversas reais ou executar migrações destrutivas.
-- Criar recursos externos pagos, enviar mensagens a clientes, publicar produto pago, ativar inscrições externas ou recolher dados pessoais de produção.
+**Autorização revista pelo responsável em 2026-10-28:** Claude Code pode instalar e publicar o novo serviço na VPS existente, configurar o subdomínio novo, criar tenants e agentes, importar dados sintéticos e testar canais próprios. Esta autorização prevalece sobre restrições anteriores de deploy, mas não autoriza operações destrutivas nem despesas imprevistas. Limites ainda aplicáveis:
+- Não apagar/desligar sistemas antigos antes de cutover validado; não alterar outros DNS além do novo subdomínio autorizado. WhatsApp próprio pode ser ligado progressivamente após testes mínimos, evitando respostas automáticas prematuras; nunca migrar dados de clientes sem validação.
+- Não assumir novos custos recorrentes sem verificar e apresentar valores; não ativar inscrições SaaS públicas nem campanhas comerciais massivas nesta fase.
 - Transferir segredos, bases de dados, backups ou dados de clientes para o repositório. O fork é **público**.
 - Fazer alterações grandes de identidade, arquitetura ou código do upstream sem especificação/justificação e testes.
 - Usar instaladores remotos não auditados, `latest` flutuante em produção ou fazer deploy inadvertido da imagem upstream.
+
+## 2A. GO EXECUTIVO — IMPLEMENTAÇÃO ACELERADA (28/10/2026)
+
+Esta secção **prevalece** sobre instruções antigas de mero estudo/staging quando conflituantes. Executar tudo num ciclo único, reduzindo burocracia sem abdicar de verificações críticas.
+
+- **Produto:** **AtlasHub Sales AI**, parte de **AtlasHub AI Workforce**. Nome técnico do fork mantém-se `ATLASHUB-SALES-OS`.
+- **Subdomínio:** `sales.atlashub.si`, HTTPS e proxy atual; Claude pode coordenar Helena/Hermes para configurar o novo DNS e certificado.
+- **White-label:** retirar menções, logos e recursos visuais **visíveis aos utilizadores** de DeskcommCRM, usando branding nativo e patches cirúrgicos. **Preservar licença MIT, copyright de Rafael Melgaço, avisos de dependências, identidade técnica obrigatória e histórico/upstream**.
+- **Base:** preferir projeto **Supabase dedicado e vazio**, dentro da mesma conta/organização AtlasHub, para **todos os tenants do novo CRM**. Nunca aplicar `supabase/baseline.sql` na base Master compartilhada de outros produtos. Alternativa Supabase self-hosted isolado na VPS se o dimensionamento real permitir. Não criar projetos por marca.
+- **VPS:** instalar stack Docker com nome, portas, volumes e redes próprios; manter serviços antigos durante validação; medir CPU/RAM/disco e evitar colidir com outros projetos.
+- **Imagem:** usar build/imagem versionada do fork AtlasHub, confirmando SHA e evitando que os scripts carreguem a imagem upstream por defeito.
+- **Dois tenants iniciais:** AtlasHub (Clara) e LIA/LeveLab (LIA), cada um com CRM, funil e agente nativo próprios. Usar o conhecimento/prompts dos agentes Hermes já existentes quando disponíveis, sem dois motores a responder à mesma conversa.
+- **Canal:** associar inicialmente número de teste; confirmar conexão, inbox, resposta IA, handoff, lead e auditoria. Depois ativar progressivamente os canais próprios previstos, um a um, somente com mensagens e permissões controladas.
+- **Testes mínimos, sem série de auditorias:** login, 2-tenant isolation, 1 importação CSV, mensagem de teste end-to-end, worker/scheduler saudável, backup/restauro e rollback disponível.
+- **Autonomia:** executar preflight → deploy → branding → tenants → agentes → canal → smoke tests → acesso interno online **sem parar entre fases para pedir nova autorização**. Pedir decisão apenas perante custo novo, falta de credencial, falta de capacidade ou ação irreversível. Não ativar billing real nem SaaS público nesta fase.
+- **Entrega:** URL acessível, credenciais de acesso comunicadas por canal privado, evidência de funcionamento e lista curta de pendências com rollback.
+
+---
 
 ## 3. Premissas técnicas verificadas no fork
 
@@ -121,7 +139,7 @@ Fontes internas: [AGENTS](../../AGENTS.md) · [Arquitetura](../../ARCHITECTURE.m
 
 ## 7. Primeira entrega de engenharia solicitada
 
-**PR F0 / Auditoria e arquitetura**, com:
+**Documentação F0 integrada na mesma execução do deploy, sem pausas ou reanálises sequenciais**, com:
 - `docs/atlashub/F0-INVENTARIO.md` — funcionalidades medidas com evidências de código.
 - `docs/atlashub/F0-TOPOLOGIA.md` — componentes, opções de hosting e custos estimados.
 - `docs/atlashub/F0-INTEGRACOES.md` — matriz de convivência/substituição com Chatwoot, Evolution API, Typebot, n8n e Hermes.
@@ -134,4 +152,4 @@ Fontes internas: [AGENTS](../../AGENTS.md) · [Arquitetura](../../ARCHITECTURE.m
 
 Este documento é a **diretiva AtlasHub** para o fork e não altera a licença do upstream. Contribuições upstream continuam possíveis. Quando exigências específicas AtlasHub divergirem da doutrina editorial do projeto original, separar decisões locais em documentação/PRs, sem fingir que as funcionalidades já existem.
 
-**Próximo passo operacional:** executar F0; só então iniciar staging F1.
+**Próximo passo operacional:** Claude Code executa preflight curto e instalação contínua no mesmo ciclo, com validações mínimas.
