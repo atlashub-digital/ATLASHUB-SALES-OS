@@ -14,7 +14,7 @@
 
 Avaliar e adotar o DeskcommCRM como **núcleo único de CRM, vendas, atendimento omnicanal e agentes comerciais de IA** para operações AtlasHub. A plataforma poderá servir como base de um futuro **AtlasHub Sales OS**, SaaS de subscrição e serviços geridos de AI Workforce.
 
-A prioridade é colocar um **piloto interno real, controlado e reversível** em funcionamento antes de desenvolver módulos próprios ou comercializar. O projeto original já contém funções de multiempresa, branding, agentes/MCP e cobrança de revendedor: validar no runtime antes de recriar.
+A prioridade é colocar uma **instalação interna operacional, controlada e reversível** em funcionamento antes de comercializar. O projeto original já contém funções de multiempresa, branding, agentes/MCP e cobrança de revendedor: validar no runtime antes de recriar.
 
 **Princípio:** reutilizar o que existe; configurar antes de personalizar; uma única fonte de verdade para dados comerciais; manter sincronização com o upstream.
 
@@ -74,7 +74,7 @@ Fontes internas: [AGENTS](../../AGENTS.md) · [Arquitetura](../../ARCHITECTURE.m
                   |       |        |       |
                   +-------+--------+-------+
                                 |
-                    Supabase dedicado + workers
+                    Supabase Master AtlasHub + workers
                                 |
                    Integrações externas controladas
                          n8n / Hermes / APIs
