@@ -1,3 +1,9 @@
+> **DECISÃO FINAL DE BASE DE DADOS — 28/10/2026 (substitui instruções anteriores)**
+> Usar **Supabase Master AtlasHub existente**, ref `aakdyumavlzgyklbrsrw`, **mesmo projeto e mesma base PostgreSQL**, em conjunto com AtlasClub e outros serviços. **Não criar projeto Supabase novo, não instalar Supabase próprio na VPS, não migrar os outros projetos.**
+> Claude Code confirma que a Master está acessível, identifica schemas e objetos, cria backup restaurável e realiza uma integração **compatível e não destrutiva** do Sales AI. Como a baseline do DeskcommCRM usa `public`, proibir a aplicação cega do script na Master; resolver colisões e Auth/RLS/Storage com alterações mínimas e verificáveis. Havendo incompatibilidade técnica real, devolver bloqueio concreto **sem optar por outra DB por iniciativa própria**.
+> Execução contínua na VPS atual em `sales.atlashub.si`, marca AtlasHub Sales AI, dois tenants AtlasHub/Clara e LIA/LeveLab. Os testes mínimos de isolamento e login são parte da execução, não uma fase de auditoria adicional.
+
+---
 # AtlasHub Sales OS — FOUNDATION 01
 **Estado:** GO EXECUTIVO — instalação end-to-end na VPS AtlasHub, com isolamento e rollback  
 **Base:** [melgarafael/DeskcommCRM](https://github.com/melgarafael/DeskcommCRM) · licença MIT  
@@ -28,7 +34,7 @@ Esta secção **prevalece** sobre instruções antigas de mero estudo/staging qu
 - **Produto:** **AtlasHub Sales AI**, parte de **AtlasHub AI Workforce**. Nome técnico do fork mantém-se `ATLASHUB-SALES-OS`.
 - **Subdomínio:** `sales.atlashub.si`, HTTPS e proxy atual; Claude pode coordenar Helena/Hermes para configurar o novo DNS e certificado.
 - **White-label:** retirar menções, logos e recursos visuais **visíveis aos utilizadores** de DeskcommCRM, usando branding nativo e patches cirúrgicos. **Preservar licença MIT, copyright de Rafael Melgaço, avisos de dependências, identidade técnica obrigatória e histórico/upstream**.
-- **Base:** preferir projeto **Supabase dedicado e vazio**, dentro da mesma conta/organização AtlasHub, para **todos os tenants do novo CRM**. Nunca aplicar `supabase/baseline.sql` na base Master compartilhada de outros produtos. Alternativa Supabase self-hosted isolado na VPS se o dimensionamento real permitir. Não criar projetos por marca.
+- **Base (decisão vinculativa de 28/10/2026):** utilizar **o projeto Supabase Cloud Master da AtlasHub existente**, ref `aakdyumavlzgyklbrsrw`, **na mesma base PostgreSQL**, para o AtlasHub Sales AI e para os projetos AtlasHub/AtlasClub. **Não criar um novo projeto Supabase nem Supabase self-hosted.** Antes de executar SQL, conferir o projeto/ref, inventariar objetos e dependências nos schemas `public`, `auth`, `storage`, `club` e outros, produzir backup restaurável e tratar colisões. O DeskcommCRM usa `public` intensivamente: nunca executar o instalador/baseline original de forma cega na Master. Se `public` não puder ser partilhado sem colisões, preparar a menor adaptação compatível, com isolamento lógico (schema próprio e/ou refatoração específica) preservando Auth, RLS, Storage, grants e demais projetos. Caso se revele incompatível com execução segura, reportar bloqueio técnico concreto e plano mínimo de compatibilidade **sem redirecionar para base nova**. Os tenants AtlasHub e LIA ficam dentro do CRM na Master.
 - **VPS:** instalar stack Docker com nome, portas, volumes e redes próprios; manter serviços antigos durante validação; medir CPU/RAM/disco e evitar colidir com outros projetos.
 - **Imagem:** usar build/imagem versionada do fork AtlasHub, confirmando SHA e evitando que os scripts carreguem a imagem upstream por defeito.
 - **Dois tenants iniciais:** AtlasHub (Clara) e LIA/LeveLab (LIA), cada um com CRM, funil e agente nativo próprios. Usar o conhecimento/prompts dos agentes Hermes já existentes quando disponíveis, sem dois motores a responder à mesma conversa.
@@ -78,7 +84,7 @@ Fontes internas: [AGENTS](../../AGENTS.md) · [Arquitetura](../../ARCHITECTURE.m
 - **Agentes nativos = primeiro motor de execução.** Hermes só em fluxos externos especializados quando houver contrato técnico claro e sem execução duplicada. Integração possível por MCP/API, com tokens de escopo mínimo, auditoria e handoff.
 - **n8n = orquestração entre sistemas**, não CRM alternativo.
 - **Chatwoot/Evolution/Typebot existentes = legado em avaliação**, sem desativação neste piloto.
-- **Supabase dedicado** ao staging deste fork, sem reutilização de bases dos outros produtos.
+- **Supabase Master partilhado** (`aakdyumavlzgyklbrsrw`) como infraestrutura comum, com isolamento lógico rigoroso do módulo Sales AI e respeito pelo Auth e pelas tabelas existentes. A utilização da Master é decisão expressa do proprietário e prevalece sobre o modelo de projeto dedicado descrito anteriormente.
 - **SaaS partilhado** apenas após testes de isolamento multiempresa; **instância dedicada** como opção enterprise.
 
 ## 5. Ordem de trabalho — fases e gates
@@ -93,9 +99,9 @@ Fontes internas: [AGENTS](../../AGENTS.md) · [Arquitetura](../../ARCHITECTURE.m
 - [ ] Produzir ADR de topologia, recursos/custos e matriz de convivência/substituição das ferramentas atuais.
 
 ### F1 — Staging isolado
-- [ ] Selecionar ambiente, orçamento e isolamento de rede; conferir CPU/RAM/storage e dependências sem tocar na infraestrutura em produção.
-- [ ] Criar banco Supabase exclusivamente do piloto, envs seguros e backups/restauração comprovados.
-- [ ] Deploy de commit/imagem AtlasHub fixos; HTTPS, health checks, logs, crons/worker e rollback.
+- [ ] Utilizar a VPS AtlasHub atual com containers isolados; conferir CPU/RAM/storage e dependências, preservando os demais serviços.
+- [ ] Utilizar a Supabase Master existente; inventariar schemas e Auth, verificar conflitos com baseline CRM, aplicar mudanças compatíveis e reversíveis, proteger os dados dos outros projetos, preparar envs seguros e backups/restauração comprovados.
+- [ ] Deploy de commit/imagem AtlasHub fixos em `sales.atlashub.si`; HTTPS, health checks, logs, crons/worker e rollback; conectar à Master sem alterar indevidamente outros schemas.
 - [ ] Criar tenant piloto AtlasHub com utilizadores e dados de demonstração.
 - [ ] Testar autenticação, perfis, CRM, funil, registo de contactos e relatórios.
 
